@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Typing Test</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    #words {
+      font-size: 22px;
+      margin-bottom: 20px;
+      line-height: 35px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 18px;
+      width: 300px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+   body {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+  </style>
+</head>
+
+<body>
+
+<h2>Typing Test</h2>
+
+<div id="words"></div>
+
+<input type="text" id="input" placeholder="Start typing...">
+
+<div id="result"></div>
+
+<button onclick="restartTest()">Restart</button>
+
+<script>
+
+// ✅ MULTIPLE TEXTS
+const texts = [
+  "swapnadeep mondal is learning javascript step by step",
+  "albert einstein was a theoretical physicist who developed relativity",
+  "rabindranath tagore was a bengali poet writer and painter",
+  "steve jobs co founded apple and changed the technology world"
+];
+
+// GLOBAL VARIABLES
+let wordList = [];
+let text = "";
+
+let currentIndex = 0;
+let score = 0;
+let startTime;
+let started = false;
+
+let resultArray = [];
+
+const wordsDiv = document.getElementById("words");
+const input = document.getElementById("input");
+
+
+// 🔥 RANDOM TEXT LOADER
+function loadNewText() {
+  let randomIndex = Math.floor(Math.random() * texts.length);
+  return texts[randomIndex];
+}
+
+
+// 🔥 INIT GAME (MAIN RESET LOGIC)
+function initGame() {
+  text = loadNewText();
+  wordList = text.split(" ");
+
+  currentIndex = 0;
+  score = 0;
+  started = false;
+  startTime = null;
+  resultArray = [];
+
+  input.value = "";
+  input.disabled = false;
+  document.getElementById("result").innerHTML = "";
+
+  displayWords();
+}
+
+
+// SHOW WORDS
+function displayWords() {
+  wordsDiv.innerHTML = "";
+
+  wordList.forEach((word, index) => {
+    let span = document.createElement("span");
+    span.innerText = word + " ";
+
+    if (resultArray[index] === "correct") {
+      span.style.color = "green";
+    }
+
+    if (resultArray[index] === "wrong") {
+      span.style.color = "red";
+    }
+
+    wordsDiv.appendChild(span);
+  });
+}
+
+
+// START TIMER ON FIRST KEY
+input.addEventListener("keydown", function () {
+  if (!started) {
+    startTime = new Date().getTime();
+    started = true;
+  }
+});
+
+
+// TYPING LOGIC
+input.addEventListener("keyup", function (e) {
+
+  if (e.key === " ") {
+    let typedWord = input.value.trim();
+
+    if (typedWord === wordList[currentIndex]) {
+      score++;
+      resultArray[currentIndex] = "correct";
+    } else {
+      resultArray[currentIndex] = "wrong";
+    }
+
+    currentIndex++;
+    input.value = "";
+
+    displayWords();
+
+    if (currentIndex === wordList.length) {
+      endTest();
+    }
+  }
+});
+
+
+// END TEST
+function endTest() {
+  let endTime = new Date().getTime();
+  let time = (endTime - startTime) / 1000;
+
+  let wpm = Math.round((score / time) * 60);
+
+  document.getElementById("result").innerHTML =
+    "Score: " + score + "/" + wordList.length + "<br>" +
+    "Speed: " + wpm + " WPM";
+
+  input.disabled = true;
+}
+
+
+// 🔄 RESTART BUTTON (FIXED)
+function restartTest() {
+  initGame();
+  input.focus();
+}
+
+
+// FIRST LOAD
+initGame();
+
+</script>
+
+</body>
+</html>
